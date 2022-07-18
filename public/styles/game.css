@@ -1,0 +1,58 @@
+.centered-container {
+    display: grid;
+    height: 80vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-info-header {
+    display: block;
+    margin: auto;
+    border: 4px solid skyblue;
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.board {
+    display: none;
+    grid-template-columns: auto auto auto;
+    padding: 30px;
+    border: 5px solid skyblue;
+    border-radius: 30px;
+}
+
+.board-btn {
+    margin: 0px;
+    background-color: skyblue;
+    border: 4px solid black;
+    border-radius: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+@media only screen and (max-width: 768px) {
+    .board-btn-size {
+        width: 20vw;
+        height: 20vw;
+    }   
+
+    .font-size {
+        font-size: 1rem;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .board-btn-size {
+        width: 10vw;
+        height: 10vw;
+    }   
+
+    .font-size {
+        font-size: 3rem;
+    }
+}
+
+.board-btn:hover {
+    background-color: blue;
+    cursor: pointer;
+}

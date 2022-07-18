@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><%= title %></title>
+        <meta name="viewport" content="width=device-width, inital-scale=1">
+        <link rel="stylesheet" type="text/css" href="../styles/game.css">
+        <script defer type="module" src="../scripts/game.js"></script>
+        <script defer type="module" src="./scripts/home.js"></script>
+    </head>
+    <body class="centered-container">
+        <h2 class="game-info-header font-size">Waiting for other player to join...</h2>
+        <div class="board">
+            <% for (let i = 0; i < 9; i++) { %>
+                <button class="board-btn board-btn-size font-size" id="<%= i %>" value="<%= i %>"></button>
+            <% } %>
+        </div>
+    </body>
+</html>

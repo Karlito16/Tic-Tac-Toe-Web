@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><%= title %></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="./styles/main.css">
+        <link rel="stylesheet" type="text/css" href="./styles/home.css">
+        <script defer src="./scripts/home.js"></script>
+    </head>
+    <body class="centered-container">
+        <div class="form">
+            <div class="input-label">
+                <label class="main-font-size" for="nickname">Nickname:</label>
+                <input class="main-font-size" type="text" id="nickname" name="nickname" value="" placeholder="Enter your nickname" minlength="2">
+            </div>
+            <input class="join-game-btn main-font-size" type="submit" value="Join Game" onclick="onJoin()">
+        </div>
+    </body>
+</html>
