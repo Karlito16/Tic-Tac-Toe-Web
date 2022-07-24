@@ -40,15 +40,13 @@ wss.on("connection", function(ws) {
         
         if (method === "nickname") {
             app.players.push(new Player(params, ws));
+            if (app.players.length >= 2) {
+                const game = new Game(app.players.slice(0, 2), app.games);
+                app.games.push(game);
 
-            //console.log("Players: " + app.players.length);
-            if (app.players.length === 2) {
-                let i = 0;
-                app.games.push(new Game(app.players.slice(0, 2)));
-                app.players.slice(0, 2).forEach((player => {
-                    player.getSocket().send(JSON.stringify({ method: "game-start", params: i === 0 ? "play" : "wait"}));
-                    ++i;
-                }));
+                game.informPlayer(game.getPlayer(0), { method: "game-start", params: ["play", game.getPlayer(1).getNickname()] });
+                game.informPlayer(game.getPlayer(1), { method: "game-start", params: ["wait", game.getPlayer(0).getNickname()] });
+
                 app.players = app.players.slice(2);
             }
         }
@@ -60,29 +58,35 @@ wss.on("connection", function(ws) {
 
             const boardSolved = game.onMove(params, player.getSocket());
             if (boardSolved) {
-                player.getSocket().send(JSON.stringify({ method: "won", params: "" }));
-                opponent.getSocket().send(JSON.stringify({ method: "lost", params: "" }));
-                // end game
-                player.getSocket().close();
-                opponent.getSocket().close();
-                app.games = app.games.filter((game_) => game !== game_);
+                game.informPlayer(player, { method: "won", params: params });
+                game.informPlayer(opponent, { method: "lost", params: params });
+
+                game.end();
+
+                console.log(app.games);
             } else if (game.isOver()) {
-                player.getSocket().send(JSON.stringify({ method: "draw", params: "" }));
-                opponent.getSocket().send(JSON.stringify({ method: "draw", params: "" }));
-                // end game
-                player.getSocket().close();
-                opponent.getSocket().close();
-                app.games = app.games.filter((game_) => game !== game_);
+                game.informPlayers({ method: "draw", params: params });
+
+                game.end();
             } else {
-                for (let ply of [player, opponent]) {
-                    ply.getSocket().send(JSON.stringify({ method: "continue", params: params}));
-                }
+                game.players().forEach((player) => {
+                    player.getSocket().send(JSON.stringify({ method: "continue", params: params}))
+                });
             }
         }
     });
 
     ws.on("close", function(data) {
         console.log("Client has disconnected!");
-        app.players = app.players.filter((player) => player.socket !== ws);
+
+        const game = app.games.filter((game) => game.getGameBySocket(ws)).pop();
+        if (game) {     // client is in the game
+            const player = game.getPlayerBySocket(ws);
+
+            game.informPlayer(game.getOpponent(player), { method: "opponent-disconnected", params: "" });
+            game.end();
+
+            app.players = app.players.filter((player_) => player_ !== player);
+        }
     });
 });

@@ -1,10 +1,14 @@
+import GameParams from "./gameParams.js";
 import startup from "./socket.js";
 
-const ws = startup();
 
-function onMove (i) {
-    const turn = JSON.parse(localStorage.getItem("turn"));
-    const gameOver = JSON.parse(localStorage.getItem("game-over"));
+const gameParams = new GameParams();
+const ws = startup(gameParams);
+
+
+function onMove(i) {
+    const turn = gameParams.getGameParameter("turn");
+    const gameOver = gameParams.getGameParameter("game-over");
     const btn = document.getElementById(i);
 
     if (gameOver) {
@@ -17,7 +21,7 @@ function onMove (i) {
             alert("Cannot select this field! Pick another!");
         } else {
             console.log(`Your turn: ${i}`);
-            btn.innerHTML = JSON.parse(localStorage.getItem("mark"));
+            btn.innerHTML = gameParams.getGameParameter("mark");
             ws.send(JSON.stringify({ method: "move", params: i }));
         }
     } else {
@@ -30,6 +34,10 @@ function main() {
     for (let btn of btns) {
         btn.addEventListener("click", () => onMove(parseInt(btn.value)));
     }
+
+    const newGameBtn = document.querySelector(".btn-primary");
+    newGameBtn.style.display = "none";
+    newGameBtn.addEventListener("click", () => location.reload());
 }
 
 main();

@@ -2,9 +2,10 @@ const Board = require("./board");
 
 class Game {
 
-    constructor(players) {
+    constructor(players, games) {
         this._playerOne = players[0];
         this._playerTwo = players[1];
+        this._games = games;
         this._board = new Board();
     }
 
@@ -15,6 +16,10 @@ class Game {
 
     isOver() {
         return this._board.isFull();
+    }
+
+    getPlayer(i) {
+        return i === 0 ? this._playerOne : i === 1 ? this._playerTwo : null;
     }
 
     getPlayerBySocket(socket) {
@@ -28,7 +33,30 @@ class Game {
     getGameBySocket(socket) {
         return this._playerOne.getSocket() === socket || this._playerTwo.getSocket() === socket ? this : null; 
     }
+    
+    players() {
+        return [this._playerOne, this._playerTwo];
+    }
 
+    informPlayer(player, message) {
+        player.getSocket().send(JSON.stringify(message));
+    }
+
+    informPlayers(message) {
+        this.players().forEach((player) => {
+            this.informPlayer(player, message);
+        });
+    }
+
+    end() {
+        this._games = this._games.filter((game) => game !== this);
+
+        this.players().forEach((player) => {
+            player.getSocket().close();
+        });
+
+        return this._games;
+    }
     
 };
 

@@ -1,3 +1,21 @@
 .border {
     border: 2px solid green;
 }
+
+.btn-primary {
+    display: block;
+    margin: 10px auto auto auto;
+    border: 2px solid black;
+    border-radius: 10px;
+    background-color: deepskyblue;
+    height: 2em;
+}
+
+.btn-primary:hover {
+    border: 3px solid black;
+    cursor: pointer;
+}
+
+.main-font-size {
+    font-size: 20px;
+}
