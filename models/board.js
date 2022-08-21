@@ -1,4 +1,31 @@
 
+/* This is used for checking the board state. Instead of checking
+all horizontal combinations, then all vertical combinations, and lastly
+both diagonals, this list is used to check all possible solutions for given
+field index.
+For example, field 0 (that is, first box, top left corner) can be included in
+three solutions: first row, first column, and diagonal from top left corner 
+to the bottom right. So, we use indexes 1, 3, and 4.
+For example, one possible solution could be first row. Well,
+if we sat down on field 0 (that is, first box), from that perspective,
+to cover up that first solution, we move forward by 1 step, 2 times.
+And lastly, to clearify, moving forward means moving from left to the
+right, and when ending up in the 3rd column, moving down to the next 
+row, starting again from the 1st column. */
+const FIELD_CHECK_STEPS = [
+    [1, 3, 4],  // steps for field 0
+    [3],        // steps for field 1
+    [2, 3],     // steps for field 2
+    [1],        // ...
+    null,
+    null,
+    [1],
+    null,
+    null
+]
+const MOVING_THRESHOLD = 2; // each solution containts 3 fields, 1 on which we are sitting, plus 2 more
+
+
 class Board {
 
     constructor() {
@@ -31,48 +58,27 @@ class Board {
     }
 
     _checkBoard() {
-        // check horizontally
-        for (let i = 0; !this._solved && i < 7; i += 3) {
-            let stateBox = this._board[i].state;
-            let valid = stateBox !== null;
-            for (let j = i + 1; valid && j < i + 3; j++)
-                if (this._board[j].state !== stateBox)
-                    valid = false;
-            if (valid)
-                this._solved = true;
-        }
+        for (let fieldIndex in FIELD_CHECK_STEPS) {
+            let state = this._board[fieldIndex].state;
+            let fieldSteps = FIELD_CHECK_STEPS[fieldIndex];
 
-        // check vertically
-        for (let i = 0; !this._solved && i < 3; i++) {
-            let stateBox = this._board[i].state;
-            let valid = stateBox !== null;
-            for (let j = i + 3; valid && j < i + 7; j += 3)
-                if (this._board[j].state !== stateBox)
-                    valid = false;
-            if (valid)
-                this._solved = true;
-        }
+            if (!fieldSteps || !state)
+                continue;
+            
+            let valid;
+            for (let step of fieldSteps) {
+                valid = true;
+                for (let move = 1; move <= MOVING_THRESHOLD && valid; move++) {
+                    let nextFieldIndex = parseInt(fieldIndex) + step * move;
+                    valid = this._board[nextFieldIndex].state === state;
+                }
+                if (valid) break;
+            }
 
-        // check diagonal 1
-        for (let i = 0; !this._solved && i < 1; i++) {
-            let stateBox = this._board[i].state;
-            let valid = stateBox !== null;
-            for (let j = i + 4; valid && j < 9; j += 4)
-                if (this._board[j].state !== stateBox)
-                    valid = false;
-            if (valid)
+            if (valid) {
                 this._solved = true;
-        }
-
-        // check diagonal 2
-        for (let i = 2; !this._solved && i < 3; i++) {
-            let stateBox = this._board[i].state;
-            let valid = stateBox !== null;
-            for (let j = i + 2; valid && j < 7; j += 2)
-                if (this._board[j].state !== stateBox)
-                    valid = false;
-            if (valid)
-                this._solved = true;
+                break;
+            }
         }
     }
 };

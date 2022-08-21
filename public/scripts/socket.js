@@ -2,7 +2,9 @@ import { turnSwitch, updateBoard, displayNewGameButton, displayInfo, displayTurn
 
 
 export default function startup(gameParams) {
-    const ws = new WebSocket("ws://192.168.1.10:3000");        // static ip address, needs to be updated for every new wlan connection
+
+    // EDIT YOUR IP ADDRESS HERE!
+    const ws = new WebSocket("ws://192.168.5.201:3000");        // static ip address, needs to be updated for every new wlan connection
 
     ws.addEventListener("open", function(event) {
         console.log("Connection opened");
